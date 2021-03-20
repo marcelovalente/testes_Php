@@ -1,0 +1,15 @@
+<?xml version='1.0'?>
+<marvel>
+<hero>
+ <name>Spider-man</name>
+ <power>2000</power>
+</hero>
+<hero>
+ <name>Hulk</name>
+ <power>10000</power>
+</hero>
+<hero>
+ <name>Ironman</name>
+ <power>5000</power>
+</hero>
+</marvel>

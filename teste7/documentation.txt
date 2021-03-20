@@ -1,0 +1,117 @@
+Documentação para acesso à api de teste
+
+Url
+https://test.cardemotion.com
+
+--------------------------------------------------------
+
+Listar todos os usuários cadastrados
+
+Método: [GET]
+Endpoint: /users.php
+
+Requisição:
+curl
+   https://test.cardemotion.com/teste7/users.php
+   -X GET
+   
+Resposta:
+{
+    "status": 200,
+    "data": [
+        {
+            "Nome": "Marcelo",
+            "Sobrenome": "Valente",
+            "Email": "marcelomsvalente@gmail.com",
+            "Telefone": "19992059886"
+        }
+    ]
+}
+
+--------------------------------------------------------
+
+Inserir um usuário novo
+
+Método: [POST]
+Endpoint: /insert.php
+
+Requisição:
+curl
+   https://test.cardemotion.com/teste7/insert.php
+   -X POST
+   --data
+	"DATA[Nome]=João
+	&DATA[Sobrenome]=Pedro
+	&DATA[Email]=joaopedrodotestedophp@gmail.com
+	&DATA[Telefone]=19990000000"
+	
+Resposta:
+{
+    "status": 200,
+    "data": [
+        {
+            "Nome": "João",
+            "Sobrenome": "Pedro",
+            "Email": "joaopedrodotestedophp@gmail.com",
+            "Telefone": "19990000000"
+        }
+    ]
+}
+
+--------------------------------------------------------
+
+Alterar informação de um usuário
+
+Método: [PUT]
+Endpoint: /update.php
+
+Requisição:
+curl
+   https://test.cardemotion.com/teste7/update.php
+   -X PUT
+   --data
+	"DATA[Nome]=Marcelo
+	&DATA[Sobrenome]=Valente
+	&DATA[Email]=marcelomsvalente@gmail.com
+	&DATA[Telefone]=19991239387
+	&ID=marcelomsvalente@gmail.com"
+	
+Resposta:
+{
+    "status": 200,
+    "data": [
+        {
+            "Nome": "Marcelo",
+            "Sobrenome": "Valente",
+            "Email": "marcelomsvalente@gmail.com",
+            "Telefone": "19991239387"
+        }
+    ]
+}
+
+--------------------------------------------------------
+
+Apaga um usuário da base de dados
+
+Método: [DELETE]
+Endpoint: /delete.php
+
+Requisição:
+curl
+   https://test.cardemotion.com/teste7/delete.php
+   -X DELETE
+   --data
+	"ID=marcelomsvalente@gmail.com"
+	
+Resposta:
+{
+    "status": 200,
+    "data": ""
+}
+
+--------------------------------------------------------
+
+Status usado na api
+código 		informação
+200 		Resposta com sucesso
+405     	Método diferente do permitido

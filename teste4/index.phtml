@@ -1,0 +1,149 @@
+<?php
+
+/**
+ * Crie um formulário contendo os campos (Nome, Sobrenome, e-mail, telefone, login & senha) e salve as submissões dentro de um arquivo chamado registros.txt. Itens mandatórios para esse exercicio:
+ *
+ *    a) Os registros devem ser salvos dentro de um array() incremental no arquivo registros.txt
+ *
+ *    b)  O formulário deverá validar os campos email e telefone aceitando somente os formatos aceitáveis
+ *
+ *    c) Se possivel nao salvar email ou logins que ja foram registrados anteriormente
+ *
+ *    d) O campo senha deverá ser salvo encriptado.
+ */
+
+declare(strict_types=1);
+
+$post = array_map('trim', $_POST);
+
+/**
+ * Será feita a validação do email informado
+ *
+ * @param string $email
+ *
+ * @return bool
+ */
+function validateEmail(string $email): bool
+{
+    if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Será feita a validação do telefone informado
+ *
+ * @param string $phoneNumber
+ *
+ * @return bool
+ */
+function validatePhoneNumber(string $phoneNumber): bool
+{
+    $phoneNumber = preg_replace('/[^0-9]/', '', $phoneNumber);
+    $lenPhoneNumber = strlen($phoneNumber);
+    if ($lenPhoneNumber == 10 || $lenPhoneNumber == 11) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Método para verificar se o email informado já existe cadastrado na base de dados
+ *
+ * @param string $email
+ * @param array $file
+ *
+ * @return bool
+ */
+function isEmailExists(string $email, array $file): bool
+{
+    if (in_array(strtolower($email), array_column($file, 'e-mail'))) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Método para verificar se o login informado já existe cadastrado na base de dados
+ *
+ * @param string $login
+ * @param array $file
+ *
+ * @return bool
+ */
+function isLoginExists(string $login, array $file): bool
+{
+    if (in_array(strtolower($login), array_column($file, 'login'))) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Padronizará os campos de $post para poder inserir na base de dados
+ * Atualização será por referência
+ *
+ * @param array $post
+ *
+ * @return void
+ */
+function standardizeFields(array &$post): void
+{
+    $post['senha'] = password_hash($post['senha'],  PASSWORD_DEFAULT);
+    $post['e-mail'] = strtolower($post['e-mail']);
+    $post['login'] = strtolower($post['login']);
+}
+
+try{
+    if ($post) {
+        $fileName = 'registros.txt';
+        if (!$fileOpen = fopen($fileName, 'a+')) {
+            throw new Exception('Houve um erro com o arquivo ' . $fileName);
+        }
+        if (!validateEmail($post['e-mail'])) {
+            throw new Exception('Algo de errado não está certo, reveja o email que você digitou');
+        }
+        if (!validatePhoneNumber($post['telefone'])) {
+            throw new Exception('Algo de errado não está certo, reveja o telefone que você digitou');
+        }
+        rewind($fileOpen);
+        $content = fread($fileOpen, filesize($filename));
+        $fileToArray = json_decode($content, true) ?: [];
+
+        if (isEmailExists($post['e-mail'], $fileToArray)) {
+            throw new Exception('O e-mail ' . $post['e-mail'] . ' já existe em nosso cadastro');
+        }
+        if (isLoginExists($post['login'], $fileToArray)) {
+            throw new Exception('O login ' . $post['login'] . ' já esta em uso, tente outro');
+        }
+        standardizeFields($post);
+        $fileToArray[] = $post;
+        file_put_contents($fileName, json_encode($fileToArray));
+        fclose($fileOpen);
+        die('Registro salvo com sucesso<br/><br/><a href="">Clique aqui</a> para um novo cadastro');
+    }
+} catch (Exception $e) {
+    die($e->getMessage() . '<br/><br/><a href="">Clique aqui</a> para preencher novamente');
+}
+
+?>
+
+<!DOCTYPE HTML>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <title>Teste 4</title>
+    </head>
+    <body>
+        <form action="" method="POST">
+            Nome: <input type="text" name="Nome"/> <br/>
+            Sobrenome: <input type="text" name="Sobrenome"/> <br/>
+            e-mail: <input type="text" name="e-mail"/> <br/>
+            telefone: <input type="text" placeholder="(99) 99999.9999" name="telefone"/> <br/>
+            login: <input type="text" name="login"/> <br/>
+            senha: <input type="password" name="senha"/> <br/>
+            <input type="submit" value="Gravar"/>
+        </form>
+    </body>
+</html>
